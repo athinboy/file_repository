@@ -12,10 +12,10 @@ namespace SimpleRunTest
         static void Main(string[] args)
         {
 
-            IReadOnlyDictionary<string, object> results = GC.GetConfigurationVariables();
-            foreach (var result in results)
+            IReadOnlyDictionary<string, object> gcConfigs = GC.GetConfigurationVariables();
+            foreach (var c in gcConfigs)
             {
-                Console.WriteLine("{ " + $"{result.Key} : {result.Value?.ToString()}" + " }");
+                Console.WriteLine("{ " + $"{c.Key} : {c.Value?.ToString()}" + " }");
             }
             _args = args;
             for (int i = 0; i < 1; i++)
@@ -25,13 +25,13 @@ namespace SimpleRunTest
             }
             Stopwatch sw = new Stopwatch();
             sw.Start();
+            Dictionary<string, long> result = new Dictionary<string, long>();
             for (int i = 0; i < 10; i++)
             {
                 Test();
             }
             sw.Stop();
-            Console.WriteLine(nameof(Test));
-            Console.WriteLine(sw.ElapsedMilliseconds);
+            result.Add(nameof(Test), sw.ElapsedMilliseconds);
 
 
             sw.Restart();
@@ -39,18 +39,21 @@ namespace SimpleRunTest
             {
                 TestList();
             }
-            Console.WriteLine(nameof(TestList));
-            Console.WriteLine(sw.ElapsedMilliseconds);
+            result.Add(nameof(TestList), sw.ElapsedMilliseconds);
 
+            foreach (var c in result)
+            {
+                Console.WriteLine("{ " + $"{c.Key} : {c.Value}" + " }");
+            }
         }
 
 
         public static void Test()
         {
-            Console.WriteLine(nameof(Test));
+            Console.Write(nameof(Test) + "_");
             Stopwatch sw = new Stopwatch();
             int count = int.Parse(_args == null || _args.Length == 0 ? "10000000" : _args[0]);
-            Console.WriteLine(count);
+            Console.Write(count + "_");
             sw.Start();
 
             //Span<StringBuilder> list = new Span<StringBuilder>();
@@ -75,10 +78,11 @@ namespace SimpleRunTest
         public static void TestList()
         {
 
-            Console.WriteLine(nameof(TestList));
+            Console.Write(nameof(TestList) + "_");
             Stopwatch sw = new Stopwatch();
             int count = int.Parse(_args == null || _args.Length == 0 ? "10000000" : _args[0]);
-            Console.WriteLine(count);
+            Console.Write(count + "_");
+
             sw.Start();
 
 
